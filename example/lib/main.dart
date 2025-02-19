@@ -106,7 +106,7 @@ Future<dynamic> myBackgroundMessageHandler(RemoteMessage message) {
 }
 
 void main() {
-  Logger.level = Level.all;
+  Logger.level = Level.info;
   runApp(const MyApp());
 }
 

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
-
-import 'package:logger/web.dart';
+import 'package:logger/logger.dart';
 
 abstract class EventType {
   const EventType();

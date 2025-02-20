@@ -23,24 +23,6 @@ public class FlutterCallkeepPlugin implements FlutterPlugin, MethodCallHandler, 
   private MethodChannel channel;
   private CallKeepModule callKeep;
 
-  /**
-   * Plugin registration.
-   */
-  public static void registerWith(Registrar registrar) {
-    final FlutterCallkeepPlugin plugin = new FlutterCallkeepPlugin();
-
-    plugin.startListening(registrar.context(), registrar.messenger());
-
-    if (registrar.activeContext() instanceof Activity) {
-      plugin.setActivity((Activity) registrar.activeContext());
-    }
-
-    registrar.addViewDestroyListener(view -> {
-      plugin.stopListening();
-      return false;
-    });
-  }
-
   private void setActivity(@NonNull Activity activity) {
     callKeep.setActivity(activity);
   }

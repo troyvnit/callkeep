@@ -15,17 +15,14 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.wazo.callkeep.CallKeepModule;
 
 /** FlutterCallkeepPlugin */
+/// The MethodChannel that will the communication between Flutter and native Android
+///
+/// This local reference serves to register the plugin with the Flutter Engine and unregister it
+/// when the Flutter Engine is detached from the Activity
 public class FlutterCallkeepPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
   private MethodChannel channel;
   private CallKeepModule callKeep;
-
-  private void setActivity(@NonNull Activity activity) {
-    callKeep.setActivity(activity);
-  }
+  private Activity activity;
 
   private void startListening(final Context context, BinaryMessenger messenger) {
     channel = new MethodChannel(messenger, "FlutterCallKeep.Method");
@@ -34,10 +31,14 @@ public class FlutterCallkeepPlugin implements FlutterPlugin, MethodCallHandler, 
   }
 
   private void stopListening() {
-    channel.setMethodCallHandler(null);
-    channel = null;
-    callKeep.dispose();
-    callKeep = null;
+    if (channel != null) {
+      channel.setMethodCallHandler(null);
+      channel = null;
+    }
+    if (callKeep != null) {
+      callKeep.dispose();
+      callKeep = null;
+    }
   }
 
   @Override
@@ -59,21 +60,31 @@ public class FlutterCallkeepPlugin implements FlutterPlugin, MethodCallHandler, 
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
-    callKeep.setActivity(binding.getActivity());
+    activity = binding.getActivity();
+    if (callKeep != null) {
+      callKeep.setActivity(activity);
+    }
   }
 
   @Override
   public void onDetachedFromActivityForConfigChanges() {
-    callKeep.setActivity(null);
+    if (callKeep != null) {
+      callKeep.setActivity(null);
+    }
   }
 
   @Override
   public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
-    callKeep.setActivity(binding.getActivity());
+    activity = binding.getActivity();
+    if (callKeep != null) {
+      callKeep.setActivity(activity);
+    }
   }
 
   @Override
   public void onDetachedFromActivity() {
-    callKeep.setActivity(null);
+    if (callKeep != null) {
+      callKeep.setActivity(null);
+    }
   }
 }

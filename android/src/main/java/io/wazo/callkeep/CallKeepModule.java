@@ -735,9 +735,14 @@ public class CallKeepModule {
 
     private static boolean hasPhoneAccount() {
         if (telecomManager == null) return false;
-        PhoneAccount phoneAccount = telecomManager.getPhoneAccount(accountHandle);
-        if (phoneAccount == null) return false;
-        return phoneAccount.isEnabled();
+        try {
+            PhoneAccount phoneAccount = telecomManager.getPhoneAccount(accountHandle);
+            if (phoneAccount == null) return false;
+            return phoneAccount.isEnabled();
+        } catch (SecurityException e) {
+            Log.w(TAG, "[hasPhoneAccount] permission denied: " + e.getMessage());
+            return false;
+        }
     }
 
     private void registerReceiver() {

@@ -396,22 +396,19 @@ public class VoiceConnectionService extends ConnectionService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Context context = getApplicationContext();
             TelecomManager telecomManager = (TelecomManager) context.getSystemService(Context.TELECOM_SERVICE);
-            PhoneAccount phoneAccount;
+            PhoneAccount phoneAccount = null;
             try {
                 phoneAccount = telecomManager.getPhoneAccount(accountHandle);
             } catch (SecurityException e) {
                 Log.w(TAG, "[VoiceConnectionService] getPhoneAccount permission denied: " + e.getMessage());
-                return connection;
-            }
-            if (phoneAccount == null) {
-                return connection;
             }
 
             //If the phone account is self managed, then this connection must also be self managed.
-            if ((phoneAccount.getCapabilities() & PhoneAccount.CAPABILITY_SELF_MANAGED) == PhoneAccount.CAPABILITY_SELF_MANAGED) {
+            if (phoneAccount != null &&
+                (phoneAccount.getCapabilities() & PhoneAccount.CAPABILITY_SELF_MANAGED) == PhoneAccount.CAPABILITY_SELF_MANAGED) {
                 Log.d(TAG, "[VoiceConnectionService] PhoneAccount is SELF_MANAGED, so connection will be too");
                 connection.setConnectionProperties(Connection.PROPERTY_SELF_MANAGED);
-            } else {
+            } else if (phoneAccount != null) {
                 Log.d(TAG, "[VoiceConnectionService] PhoneAccount is not SELF_MANAGED, so connection won't be either");
             }
         }
